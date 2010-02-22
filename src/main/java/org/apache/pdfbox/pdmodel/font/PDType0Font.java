@@ -16,14 +16,22 @@
  */
 package org.apache.pdfbox.pdmodel.font;
 
-import java.awt.Graphics;
-import java.awt.geom.AffineTransform;
 import java.io.IOException;
 
 import org.apache.pdfbox.cos.COSArray;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.common.PDStream;
+
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This is implementation of the Type0 Font. Note that currently
@@ -38,7 +46,11 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
 public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
 {
 
+    private static final Log log = LogFactory.getLog(PDType0Font.class);
+    private static double BOLD_WEIGHT_THRESHOLD = 500.0;
     private PDFont descendentFont;
+     private Font awtFont;
+
     /**
      * Constructor.
      */
@@ -64,8 +76,9 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
     public void drawString( String string, Graphics g, float fontSize, AffineTransform at, float x, float y ) 
         throws IOException
     {
-        // TODO: PDFBOX-605: Better support for Type0 fonts 
-        super.drawString(string, g, fontSize, at, x, y);
+        Graphics2D g2d = (Graphics2D)g;
+        g2d.setRenderingHint( RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON );
+        writeFont(g2d, at, getAwtFont(), fontSize, x, y, string);
     }
 
     /**
@@ -146,5 +159,63 @@ public class PDType0Font extends /*PDFont following is a hack ...*/ PDType1Font
             descendentFont = PDFontFactory.createFont( descendantFontDictionary );
         }
         return descendentFont.getAverageFontWidth();
+    }
+
+    private Font getAwtFont() throws IOException {
+        if (awtFont != null) {
+            return awtFont;
+        }
+
+        PDFontDescriptor fd = null;
+        if (descendentFont instanceof PDCIDFont) {
+            fd = ((PDCIDFont)descendentFont).getFontDescriptor();
+        } else if (descendentFont instanceof PDSimpleFont) {
+            fd = ((PDSimpleFont)descendentFont).getFontDescriptor();
+        }
+
+        if (fd != null) {
+            if (fd instanceof PDFontDescriptorDictionary) {
+                PDFontDescriptorDictionary fdd = (PDFontDescriptorDictionary)fd;
+
+                PDStream ffStream = null;
+                if ((ffStream = fdd.getFontFile()) != null) {
+                    try {
+                        awtFont = Font.createFont( Font.TYPE1_FONT, ffStream.createInputStream() );
+                    } catch (FontFormatException e) {
+                        // ignore
+                    }
+                } else if ((ffStream = fdd.getFontFile2()) != null) {
+                    try {
+                        awtFont = Font.createFont( Font.TRUETYPE_FONT, ffStream.createInputStream() );
+                    } catch (FontFormatException e) {
+                        // ignore
+                    }
+                } else if ((ffStream = fdd.getFontFile3()) != null) {
+                    log.info("font3");
+                }
+            }
+            if (awtFont == null) {
+                awtFont = FontManager.getAwtFont(fd.getFontName());
+            }
+        }
+        if (awtFont == null) {
+            awtFont = FontManager.getAwtFont(getBaseFont());
+        }
+        if (awtFont == null) {
+            awtFont = FontManager.getStandardFont();
+            if (fd != null) {
+                int style = Font.PLAIN;
+                if (fd.getFontWeight() >= BOLD_WEIGHT_THRESHOLD || fd.isForceBold()) {
+                    style |= Font.BOLD;
+                }
+                if (fd.isItalic()) {
+                    style |= Font.ITALIC;
+                }
+                if (style != Font.PLAIN) {
+                    awtFont = new Font(awtFont.getName(), style, awtFont.getSize());
+                }
+            }
+        }
+        return awtFont;
     }
 }

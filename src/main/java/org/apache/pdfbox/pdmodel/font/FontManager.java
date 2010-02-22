@@ -58,7 +58,7 @@ public class FontManager
     {
     }
     /**
-     * Get the standard font from the environment, usually Arial or Times New Roman. 
+     * Get the standard font from the environment, usually Serif. 
      *
      * @return The standard font 
      * 
@@ -127,15 +127,7 @@ public class FontManager
 
     private static void setStandardFont() 
     {
-        // One of the following fonts will be the standard-font 
-        if (envFonts.containsKey("arial"))
-        {
-            standardFont = "arial";
-        }
-        else if (envFonts.containsKey("timesnewroman"))
-        {
-            standardFont = "timesnewroman";
-        }
+        standardFont = "serif";
     }
     
     /**
