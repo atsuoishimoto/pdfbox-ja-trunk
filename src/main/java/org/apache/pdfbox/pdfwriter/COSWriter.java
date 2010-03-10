@@ -343,8 +343,8 @@ public class COSWriter implements ICOSVisitor
     {
         COSDictionary trailer = doc.getTrailer();
         COSDictionary root = (COSDictionary)trailer.getDictionaryObject( COSName.ROOT );
-        COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.getPDFName( "Info" ) );
-        COSDictionary encrypt = (COSDictionary)trailer.getDictionaryObject( COSName.getPDFName( "Encrypt" ) );
+        COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
+        COSDictionary encrypt = (COSDictionary)trailer.getDictionaryObject( COSName.ENCRYPT );
         if( root != null )
         {
             addObjectToWrite( root );
@@ -472,7 +472,7 @@ public class COSWriter implements ICOSVisitor
         //sort xref, needed only if object keys not regenerated
         Collections.sort(getXRefEntries());
         COSWriterXRefEntry lastEntry = (COSWriterXRefEntry)getXRefEntries().get( getXRefEntries().size()-1);
-        trailer.setInt(COSName.getPDFName("Size"), (int)lastEntry.getKey().getNumber()+1);
+        trailer.setInt(COSName.SIZE, (int)lastEntry.getKey().getNumber()+1);
         trailer.removeItem( COSName.PREV );
         /**
         COSObject catalog = doc.getCatalog();
@@ -927,7 +927,7 @@ public class COSWriter implements ICOSVisitor
                 getStandardOutput().write( buffer, 0, amountRead );
                 totalAmountWritten += amountRead;
             }
-            lengthObject.setObject( new COSInteger( totalAmountWritten ) );
+            lengthObject.setObject( COSInteger.get( totalAmountWritten ) );
             getStandardOutput().writeCRLF();
             getStandardOutput().write(ENDSTREAM);
             getStandardOutput().writeEOL();
@@ -1001,7 +1001,7 @@ public class COSWriter implements ICOSVisitor
             // don't try to decrypt a document which is not encrypted
             COSDocument cosDoc = doc.getDocument();
             COSDictionary trailer = cosDoc.getTrailer();
-            trailer.removeItem(COSName.getPDFName("Encrypt"));
+            trailer.removeItem(COSName.ENCRYPT);
         }
         else
         {
@@ -1030,7 +1030,7 @@ public class COSWriter implements ICOSVisitor
 
         COSDocument cosDoc = document.getDocument();
         COSDictionary trailer = cosDoc.getTrailer();
-        COSArray idArray = (COSArray)trailer.getDictionaryObject( "ID" );
+        COSArray idArray = (COSArray)trailer.getDictionaryObject( COSName.ID );
         if( idArray == null )
         {
             try
@@ -1040,7 +1040,7 @@ public class COSWriter implements ICOSVisitor
                 //the id.  We don't have path or size, so do the best we can
                 MessageDigest md = MessageDigest.getInstance( "MD5" );
                 md.update( Long.toString( System.currentTimeMillis()).getBytes() );
-                COSDictionary info = (COSDictionary)trailer.getDictionaryObject( "Info" );
+                COSDictionary info = (COSDictionary)trailer.getDictionaryObject( COSName.INFO );
                 if( info != null )
                 {
                     Iterator values = info.getValues().iterator();
@@ -1053,7 +1053,7 @@ public class COSWriter implements ICOSVisitor
                 COSString id = new COSString( md.digest() );
                 idArray.add( id );
                 idArray.add( id );
-                trailer.setItem( "ID", idArray );
+                trailer.setItem( COSName.ID, idArray );
             }
             catch( NoSuchAlgorithmException e )
             {

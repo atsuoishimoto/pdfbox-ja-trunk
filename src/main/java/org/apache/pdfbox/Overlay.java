@@ -21,7 +21,6 @@ import org.apache.pdfbox.cos.COSBase;
 import org.apache.pdfbox.cos.COSDictionary;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.cos.COSStream;
-import org.apache.pdfbox.cos.COSInteger;
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdfparser.PDFParser;
 import org.apache.pdfbox.pdfwriter.COSWriter;
@@ -64,17 +63,19 @@ import java.util.Map;
 public class Overlay
 {
     /**
-     * COSName constant.
+     * @deprecated use the {@link COSName#XOBJECT} constant instead
      */
-    public static final COSName XOBJECT = COSName.getPDFName("XObject");
+    public static final COSName XOBJECT = COSName.XOBJECT;
+
     /**
-     * COSName constant.
+     * @deprecated use the {@link COSName#PROC_SET} constant instead
      */
-    public static final COSName PROC_SET = COSName.getPDFName("ProcSet");
+    public static final COSName PROC_SET = COSName.PROC_SET;
+
     /**
-     * COSName constant.
+     * @deprecated use the {@link COSName#EXT_G_STATE} constant instead
      */
-    public static final COSName EXT_G_STATE = COSName.getPDFName("ExtGState" );
+    public static final COSName EXT_G_STATE = COSName.EXT_G_STATE;
 
     private List layoutPages = new ArrayList(10);
 
@@ -351,7 +352,7 @@ public class Overlay
         }
 
         COSDictionary streamDict = new COSDictionary();
-        streamDict.setItem(COSName.LENGTH, new COSInteger(baos.size()));
+        streamDict.setInt(COSName.LENGTH, baos.size());
         COSStream output = new COSStream(streamDict, pdfDocument.getDocument().getScratchFile());
         output.setFilters(stream.getFilters());
         OutputStream os = output.createUnfilteredStream();
@@ -408,10 +409,10 @@ public class Overlay
         }
         COSDictionary docResDict = resources.getCOSDictionary();
         COSDictionary layoutResDict = layoutPage.res;
-        mergeArray(PROC_SET, docResDict, layoutResDict);
+        mergeArray(COSName.PROC_SET, docResDict, layoutResDict);
         mergeDictionary(COSName.FONT, docResDict, layoutResDict, layoutPage.objectNameMap);
-        mergeDictionary(XOBJECT, docResDict, layoutResDict, layoutPage.objectNameMap);
-        mergeDictionary(EXT_G_STATE, docResDict, layoutResDict, layoutPage.objectNameMap);
+        mergeDictionary(COSName.XOBJECT, docResDict, layoutResDict, layoutPage.objectNameMap);
+        mergeDictionary(COSName.EXT_G_STATE, docResDict, layoutResDict, layoutPage.objectNameMap);
 
         //we are going to wrap the existing content around some save/restore
         //graphics state, so the result is

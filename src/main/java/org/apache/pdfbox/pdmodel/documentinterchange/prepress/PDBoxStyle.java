@@ -180,13 +180,13 @@ public class PDBoxStyle implements COSObjectable
         if( d == null )
         {
             d = new COSArray();
-            d.add( new COSInteger(3) );
+            d.add( COSInteger.THREE );
             dictionary.setItem( "D", d );
         }
         COSArray lineArray = new COSArray();
         lineArray.add( d );
         //dash phase is not specified and assumed to be zero.
-        lineArray.add( new COSInteger( 0 ) );
+        lineArray.add( COSInteger.ZERO );
         pattern = new PDLineDashPattern( lineArray );
         return pattern;
     }

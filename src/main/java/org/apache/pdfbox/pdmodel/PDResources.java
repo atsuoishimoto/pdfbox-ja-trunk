@@ -141,12 +141,12 @@ public class PDResources implements COSObjectable
     public Map getXObjects() throws IOException
     {
         Map retval = null;
-        COSDictionary xobjects = (COSDictionary)resources.getDictionaryObject( "XObject" );
+        COSDictionary xobjects = (COSDictionary)resources.getDictionaryObject( COSName.XOBJECT );
 
         if( xobjects == null )
         {
             xobjects = new COSDictionary();
-            resources.setItem( "XObject", xobjects );
+            resources.setItem( COSName.XOBJECT, xobjects );
         }
 
         Map actuals = new HashMap();
@@ -176,12 +176,12 @@ public class PDResources implements COSObjectable
     public Map getImages() throws IOException
     {
         Map retval = null;
-        COSDictionary images = (COSDictionary)resources.getDictionaryObject( "XObject" );
+        COSDictionary images = (COSDictionary)resources.getDictionaryObject( COSName.XOBJECT );
 
         if( images == null )
         {
             images = new COSDictionary();
-            resources.setItem( "XObject", images );
+            resources.setItem( COSName.XOBJECT, images );
         }
 
         Map actuals = new HashMap();
@@ -247,7 +247,7 @@ public class PDResources implements COSObjectable
      */
     public void setColorSpaces( Map colorspaces )
     {
-        resources.setItem( COSName.getPDFName( "ColorSpace" ), COSDictionaryMap.convert( colorspaces ) );
+        resources.setItem( COSName.COLORSPACE, COSDictionaryMap.convert( colorspaces ) );
     }
 
     /**
@@ -260,7 +260,7 @@ public class PDResources implements COSObjectable
     public Map getGraphicsStates()
     {
         Map retval = null;
-        COSDictionary states = (COSDictionary)resources.getDictionaryObject( COSName.getPDFName( "ExtGState" ) );
+        COSDictionary states = (COSDictionary)resources.getDictionaryObject( COSName.EXT_G_STATE );
 
         if( states != null )
         {
@@ -290,6 +290,6 @@ public class PDResources implements COSObjectable
             PDExtendedGraphicsState state = (PDExtendedGraphicsState)states.get( name );
             dic.setItem( COSName.getPDFName( name ), state.getCOSObject() );
         }
-        resources.setItem( COSName.getPDFName( "ExtGState" ), dic );
+        resources.setItem( COSName.EXT_G_STATE, dic );
     }
 }

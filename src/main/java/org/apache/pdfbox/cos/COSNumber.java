@@ -26,32 +26,16 @@ import java.io.IOException;
  */
 public abstract class COSNumber extends COSBase
 {
-    
-    /**
-     * ZERO.
-    */
-    public static final COSInteger ZERO = new COSInteger( 0 );
 
     /**
-     * ONE.
-    */
-    public static final COSInteger ONE = new COSInteger( 1 );
-
-    /**
-     * Efficient lookup table for the ten decimal digits.
+     * @deprecated Use the {@link COSInteger#ZERO} constant instead
      */
-    private static final COSInteger[] DIGITS = new COSInteger[] {
-        ZERO,
-        ONE,
-        new COSInteger(2),
-        new COSInteger(3),
-        new COSInteger(4),
-        new COSInteger(5),
-        new COSInteger(6),
-        new COSInteger(7),
-        new COSInteger(8),
-        new COSInteger(9),
-    };
+    public static final COSInteger ZERO = COSInteger.ZERO;
+
+    /**
+     * @deprecated Use the {@link COSInteger#ONE} constant instead
+     */
+    public static final COSInteger ONE = COSInteger.ONE;
 
     /**
      * This will get the float value of this number.
@@ -95,12 +79,19 @@ public abstract class COSNumber extends COSBase
         if (number.length() == 1) {
             char digit = number.charAt(0);
             if ('0' <= digit && digit <= '9') {
-                return DIGITS[digit - '0'];
+                return COSInteger.get(digit - '0');
             } else {
                 throw new IOException("Not a number: " + number);
             }
         } else if (number.indexOf('.') == -1) {
-            return new COSInteger(number);
+            try
+            {
+                return COSInteger.get( Long.parseLong( number ) );
+            }
+            catch( NumberFormatException e )
+            {
+                throw new IOException( "Value is not an integer: " + number );
+            }
         } else {
             return new COSFloat(number);
         }

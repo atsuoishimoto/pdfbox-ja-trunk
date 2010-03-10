@@ -174,7 +174,7 @@ public class PDBorderStyleDictionary implements COSObjectable
         if (d == null)
         {
             d = new COSArray();
-            d.add( new COSInteger( 3 ) );
+            d.add( COSInteger.THREE );
             getDictionary().setItem( "D", d );
         }
         return new PDLineDashPattern( d, 0 );

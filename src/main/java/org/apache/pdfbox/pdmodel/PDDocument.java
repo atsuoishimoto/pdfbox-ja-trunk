@@ -142,7 +142,7 @@ public class PDDocument implements Pageable
         pages.setItem( COSName.TYPE, COSName.PAGES );
         COSArray kidsArray = new COSArray();
         pages.setItem( COSName.KIDS, kidsArray );
-        pages.setItem( COSName.COUNT, new COSInteger( 0 ) );
+        pages.setItem( COSName.COUNT, COSInteger.ZERO );
     }
 
     private void generatePageMap() 

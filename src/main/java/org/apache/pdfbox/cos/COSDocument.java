@@ -263,7 +263,7 @@ public class COSDocument extends COSBase
         boolean encrypted = false;
         if( trailer != null )
         {
-            encrypted = trailer.getDictionaryObject( "Encrypt" ) != null;
+            encrypted = trailer.getDictionaryObject( COSName.ENCRYPT ) != null;
         }
         return encrypted;
     }
@@ -276,7 +276,7 @@ public class COSDocument extends COSBase
      */
     public COSDictionary getEncryptionDictionary()
     {
-        return (COSDictionary)trailer.getDictionaryObject( COSName.getPDFName( "Encrypt" ) );
+        return (COSDictionary)trailer.getDictionaryObject( COSName.ENCRYPT );
     }
 
     /**
@@ -287,7 +287,7 @@ public class COSDocument extends COSBase
      */
     public void setEncryptionDictionary( COSDictionary encDictionary )
     {
-        trailer.setItem( COSName.getPDFName( "Encrypt" ), encDictionary );
+        trailer.setItem( COSName.ENCRYPT, encDictionary );
     }
 
     /**
@@ -297,7 +297,7 @@ public class COSDocument extends COSBase
      */
     public COSArray getDocumentID()
     {
-        return (COSArray) getTrailer().getItem(COSName.getPDFName("ID"));
+        return (COSArray) getTrailer().getItem(COSName.ID);
     }
 
     /**
@@ -307,7 +307,7 @@ public class COSDocument extends COSBase
      */
     public void setDocumentID( COSArray id )
     {
-        getTrailer().setItem(COSName.getPDFName("ID"), id);
+        getTrailer().setItem(COSName.ID, id);
     }
 
     /**
@@ -478,8 +478,8 @@ public class COSDocument extends COSBase
             obj = new COSObject(null);
             if( key != null )
             {
-                obj.setObjectNumber( new COSInteger( key.getNumber() ) );
-                obj.setGenerationNumber( new COSInteger( key.getGeneration() ) );
+                obj.setObjectNumber( COSInteger.get( key.getNumber() ) );
+                obj.setGenerationNumber( COSInteger.get( key.getGeneration() ) );
                 objectPool.put(key, obj);
             }
         }
